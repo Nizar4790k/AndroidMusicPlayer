@@ -1,7 +1,6 @@
 package com.nizar4790k.androidmusicplayer.main.fragment;
 
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nizar4790k.androidmusicplayer.R;
-import com.nizar4790k.androidmusicplayer.main.fetch.AuthorizeTask;
-import com.nizar4790k.androidmusicplayer.main.fetch.SpotifyFetch;
-import com.nizar4790k.androidmusicplayer.main.model.Music;
+import com.nizar4790k.androidmusicplayer.main.connectors.SongService;
+import com.nizar4790k.androidmusicplayer.main.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,27 +33,27 @@ public class LikedSongsListFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.music_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        MusicAdapter adapter = new MusicAdapter(new ArrayList<Music>());
+        SongService songService= new SongService(getContext());
+
+        songService.getRecentlyPlayedTracks(() ->{});
+
+         ArrayList<Song> songs = songService.getSongs();
+
+        MusicAdapter adapter = new MusicAdapter(songs);
         mRecyclerView.setAdapter(adapter);
 
         return view;
     }
 
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        AuthorizeTask authorizeTask = new AuthorizeTask();
-        authorizeTask.execute();
 
-    }
 
 
     private class MusicAdapter extends RecyclerView.Adapter<MusicHolder>{
 
-        private List<Music> mMusicList;
+        private List<Song> mMusicList;
 
-        private MusicAdapter(List<Music> musicList){
+        private MusicAdapter(List<Song> musicList){
             mMusicList = musicList;
         }
 
@@ -95,10 +93,10 @@ public class LikedSongsListFragment extends Fragment {
 
         }
 
-        public void bind (Music music){
+        public void bind (Song song){
 
-            mTextViewTitle.setText(music.getTitle());
-            mTextViewArtist.setText(music.getArtist());
+            mTextViewTitle.setText(song.getName());
+            mTextViewArtist.setText(song.getId());
 
         }
 
